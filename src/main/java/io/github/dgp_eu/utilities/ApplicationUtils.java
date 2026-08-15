@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import io.github.dgp_eu.tools.cli.CommonInteractiveClass;
+import io.github.dgp_eu.tools.core.CommonInteractiveClass;
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
@@ -43,7 +43,7 @@ public class ApplicationUtils {
      * @param args input arguments
      */
     public static void main( final String[] args ) {
-        CommonInteractiveClass.startMeUpWithParameters("logs/Utilities-", "/utilities-pom.xml");
+        CommonInteractiveClass.startMeUpWithParameters("logs/Utilities", "/utilities-pom.xml");
         final int intUtilsExitCode = new CommandLine(new ApplicationUtils()).execute(args);
         CommonInteractiveClass.shutMeDownWithParameters(intUtilsExitCode, args[0]);
     }
