@@ -45,8 +45,8 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <sonar.organization>dgp-eu</sonar.organization>
         <!-- Dependency versions -->
-        <tools.version>1.2.3</tools.version>
-        <jackson-databind.version>3.2.1</jackson-databind.version>
+        <tools.version>1.2.4</tools.version>
+        <jackson-databind.version>3.2.2</jackson-databind.version>
         <!-- Build Plugin versions -->
         <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
         <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
