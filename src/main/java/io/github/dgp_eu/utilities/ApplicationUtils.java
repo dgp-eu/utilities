@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import io.github.dgp_eu.tools.core.CommonInteractiveClass;
+import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 import io.github.dgp_eu.tools.core.ShellingClass;
 import io.github.dgp_eu.tools.core.TimingClass;
+import io.github.dgp_eu.tools.core.TimingClass.AgingSubClass;
 import picocli.CommandLine;
 import picocli.CommandLine.Mixin;
 
@@ -135,7 +137,6 @@ class AnalyzePomFiles implements Runnable {
         final String[] inFiles = optFileNames.getInFileNames();
         for (final String strFileName : inFiles) {
             ProjectClass.setPomFile(strFileName);
-            ProjectClass.loadProjectModel();
             final String strFeedback = String.format("For given POM file %s relevant information is: {%s}", strFileName, ProjectClass.ApplicationSubClass.getApplicationDetails());
             LogExposureClass.LOGGER.info(strFeedback);
         }
@@ -163,7 +164,7 @@ class ArchiveFolders implements Runnable {
     @CommandLine.Option(
             names = {"-aExe", "--archivingExecutable"},
             description = "Archiving executable (including full path, required, only one)",
-            arity = BasicStructuresClass.ARITY_ONLY_ONE,
+            arity = CommonInteractiveClass.ARITY_ONLY_ONE,
             required = true)
     private String strArchivingExec;
 
@@ -173,7 +174,7 @@ class ArchiveFolders implements Runnable {
     @CommandLine.Option(
             names = {"-pwd", "--archivePassword"},
             description = "Password for archive encryption (optional, only one)",
-            arity = BasicStructuresClass.ARITY_ONLY_ONE)
+            arity = CommonInteractiveClass.ARITY_ONLY_ONE)
     private String strArchivePwd;
 
     /**
@@ -182,7 +183,7 @@ class ArchiveFolders implements Runnable {
     @CommandLine.Option(
             names = {"-ap", "--archivePrefix"},
             description = "Prefix to apply to archive name (optional, only one)",
-            arity = BasicStructuresClass.ARITY_ONLY_ONE)
+            arity = CommonInteractiveClass.ARITY_ONLY_ONE)
     private String strArchivePrefix;
 
     /**
@@ -191,7 +192,7 @@ class ArchiveFolders implements Runnable {
     @CommandLine.Option(
             names = {"-as", "--archiveSuffix"},
             description = "Suffix to apply to archive name (optional, only one)",
-            arity = BasicStructuresClass.ARITY_ONLY_ONE)
+            arity = CommonInteractiveClass.ARITY_ONLY_ONE)
     private String strArchiveSuffix;
 
     /**
@@ -257,7 +258,7 @@ class CalculateSunriseAndSunset implements Runnable {
     @CommandLine.Option(
             names = {"-lon", "--longitude"},
             description = "Longitude",
-            arity = BasicStructuresClass.ARITY_ONE_OR_MORE,
+            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
             required = true)
     private double[] dblLongitude;
 
@@ -267,7 +268,7 @@ class CalculateSunriseAndSunset implements Runnable {
     @CommandLine.Option(
             names = {"-lat", "--latitude"},
             description = "Latitude",
-            arity = BasicStructuresClass.ARITY_ONE_OR_MORE,
+            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
             required = true)
     private double[] dblLatitude;
 
@@ -277,7 +278,7 @@ class CalculateSunriseAndSunset implements Runnable {
     @CommandLine.Option(
             names = {"-zn", "--zoneName"},
             description = "Zone Name",
-            arity = BasicStructuresClass.ARITY_ONE_OR_MORE,
+            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
             required = true)
     private String[] strZoneName;
 
@@ -287,7 +288,7 @@ class CalculateSunriseAndSunset implements Runnable {
     @CommandLine.Option(
             names = {"-ld", "--locationDetail"},
             description = "Location details: name,country,division,town",
-            arity = BasicStructuresClass.ARITY_ONE_OR_MORE,
+            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
             required = true)
     private String[] strLocationDetail;
 
@@ -343,8 +344,9 @@ class CaptureChecksumsOfFilesFromFoldersIntoCsvFile implements Runnable {
         for (final String strFolder : inFolders) {
             final ZonedDateTime startComputeTime = ZonedDateTime.now(ZoneId.systemDefault());
             FileOperationsClass.StatisticsSubClass.captureFileStatisticsFromFolder(strFolder, outCsvFile);
-            final Duration objDuration = Duration.between(startComputeTime, ZonedDateTime.now(ZoneId.systemDefault()));
-            final String strFeedback = String.format("For the folder %s calculated checksums are stored in the file %s operation completed in %s (which means %s | %s)", strFolder, outCsvFile, objDuration.toString(), TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDuration, "HumanReadableTime"), TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDuration, "TimeClock"));
+            final ZonedDateTime zStopTimeStamp = ZonedDateTime.now(ZoneId.systemDefault());
+            final Duration objDuration = Duration.between(startComputeTime, zStopTimeStamp);
+            final String strFeedback = String.format("For the folder %s calculated checksums are stored in the file %s operation completed in %s (which means %s | %s)", strFolder, outCsvFile, objDuration.toString(), AgingSubClass.computeAgingIntoHumanReadableWords(startComputeTime, zStopTimeStamp), TimingClass.AgingSubClass.computeAgingIntoTimeClock(startComputeTime, zStopTimeStamp));
             LogExposureClass.LOGGER.info(strFeedback);
         }
     }
@@ -452,7 +454,7 @@ class CleanOlderFilesFromFolder implements Runnable {
             FileOperationsClass.DeletingSubClass.OlderClass.setOrResetCleanedFolderStatistics();
             FileOperationsClass.DeletingSubClass.OlderClass.deleteFilesOlderThanGivenDays(strFolder, intDaysOlderLimit);
             final Map<String, Long> statsClndFldr = FileOperationsClass.DeletingSubClass.OlderClass.getCleanedFolderStatistics();
-            final String strFeedback = String.format("Folder %s has been cleaned eliminating %s files and freeing %s bytes in terms of disk space...", strFolder, statsClndFldr.get("Files"), statsClndFldr.get("Size"));
+            final String strFeedback = String.format("Folder %s has been cleaned eliminating %s files and freeing %s bytes in terms of disk space...", strFolder, statsClndFldr.get("Files"), statsClndFldr.get(ConfigurationClass.STR_SIZE));
             LogExposureClass.LOGGER.info(strFeedback);
         }
     }

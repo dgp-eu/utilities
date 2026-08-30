@@ -6,7 +6,6 @@ package io.github.dgp_eu.utilities;
 import static java.lang.Math.*;
 
 import java.time.DateTimeException;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -16,9 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Properties;
 
-import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
-import io.github.dgp_eu.tools.core.TimingClass;
+import io.github.dgp_eu.tools.core.TimingClass.AgingSubClass;
 
 /**
  * Sun position class
@@ -74,8 +72,7 @@ public final class SunClass {
         }
         if ((sunrise != null)
             && (sunset != null)) {
-            final Duration objDurationSun = Duration.between(sunrise, sunset);
-            OUT_PROPERTIES.put("Daylight time", TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDurationSun, BasicStructuresClass.STR_TM_HUMAN));
+            OUT_PROPERTIES.put("Daylight time", AgingSubClass.computeAgingIntoHumanReadableWords(sunrise, sunset));
             enhanceSunStatistics(nowZ, sunrise, sunset);
         }
         return OUT_PROPERTIES;
@@ -142,36 +139,24 @@ public final class SunClass {
         final ZonedDateTime sunriseNext = calculateSunSetOrRise(tomorrowZ, true);
         String strSunSituation = "DOWN";
         String strCrtSituation = "After sunset";
-        String strPriorEvent = "Sunset since %s";
-        String strNextEvent = "Sunrise in %s";
-        final Duration objDurationPrior;
-        final Duration objDurationNext;
         if (nowZ.isBefore(sunrise)) {
             strSunSituation = "DOWN";
             strCrtSituation = "Before sunrise";
-            strPriorEvent = "Sunset since %s";
-            strNextEvent = "Sunrise in %s";
-            objDurationPrior = Duration.between(sunsetPrior, nowZ);
-            objDurationNext = Duration.between(nowZ, sunrise);
+            OUT_PROPERTIES.put("Prior event", String.format("Sunset since %s", AgingSubClass.computeAgingIntoHumanReadableWords(sunsetPrior, nowZ)));
+            OUT_PROPERTIES.put("Next event", String.format("Sunrise in %s", AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunrise)));
         } else if (nowZ.isBefore(sunset)) {
             strSunSituation = "UP";
             strCrtSituation = "In between sunrise and sunset";
-            strPriorEvent = "Sunrise since %s";
-            strNextEvent = "Sunset in %s";
-            objDurationPrior = Duration.between(sunrise, nowZ);
-            objDurationNext = Duration.between(nowZ, sunset);
+            OUT_PROPERTIES.put("Prior event", String.format("Sunrise since %s", AgingSubClass.computeAgingIntoHumanReadableWords(sunrise, nowZ)));
+            OUT_PROPERTIES.put("Next event", String.format("Sunset in %s", AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunset)));
         } else {
-            objDurationPrior = Duration.between(sunset, nowZ);
-            objDurationNext = Duration.between(nowZ, sunriseNext);
+            OUT_PROPERTIES.put("Prior event", String.format("Sunset since %s", AgingSubClass.computeAgingIntoHumanReadableWords(sunset, nowZ)));
+            OUT_PROPERTIES.put("Next event", String.format("Sunrise in %s", AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunriseNext)));
         }
         OUT_PROPERTIES.put("Sun situation", strSunSituation);
         OUT_PROPERTIES.put("Current Situation", strCrtSituation);
-        OUT_PROPERTIES.put("Prior event", String.format(strPriorEvent, TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDurationPrior, BasicStructuresClass.STR_TM_HUMAN)));
-        OUT_PROPERTIES.put("Next event", String.format(strNextEvent, TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDurationNext, BasicStructuresClass.STR_TM_HUMAN)));
-        final Duration objDurationPriorN = Duration.between(sunsetPrior, sunrise);
-        OUT_PROPERTIES.put("Prior night", TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDurationPriorN, BasicStructuresClass.STR_TM_HUMAN));
-        final Duration objDurationNextN = Duration.between(sunset, sunriseNext);
-        OUT_PROPERTIES.put("Next night", TimingClass.ConversionSubClass.convertNanosecondsIntoSomething(objDurationNextN, BasicStructuresClass.STR_TM_HUMAN));
+        OUT_PROPERTIES.put("Prior night", AgingSubClass.computeAgingIntoHumanReadableWords(sunsetPrior, sunrise));
+        OUT_PROPERTIES.put("Next night", AgingSubClass.computeAgingIntoHumanReadableWords(sunset, sunriseNext));
     }
 
     /**
