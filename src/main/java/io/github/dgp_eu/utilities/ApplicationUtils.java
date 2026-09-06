@@ -16,8 +16,7 @@ import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 import io.github.dgp_eu.tools.core.ShellingClass;
-import io.github.dgp_eu.tools.core.TimingClass;
-import io.github.dgp_eu.tools.core.TimingClass.AgingSubClass;
+import io.github.dgp_eu.tools.core.time.TimingClass;
 import picocli.CommandLine;
 import picocli.CommandLine.Mixin;
 
@@ -30,7 +29,6 @@ import picocli.CommandLine.Mixin;
             AnalyzeColumnsFromCsvFiles.class,
             AnalyzePomFiles.class,
             ArchiveFolders.class,
-            CalculateSunriseAndSunset.class,
             CaptureChecksumsOfFilesFromFoldersIntoCsvFile.class,
             CaptureImportsFromJavaSourceFilesIntoCsvFile.class,
             CaptureWindowsApplicationsInstalledIntoCsvFile.class,
@@ -248,76 +246,6 @@ class ArchiveFolders implements Runnable {
 /**
  * clean files older than a given number of days
  */
-@CommandLine.Command(name = "CalculateSunriseAndSunset",
-                     description = "Calculates Sunrise and Sunset for one or more location")
-class CalculateSunriseAndSunset implements Runnable {
-
-    /**
-     * option for Longitude
-     */
-    @CommandLine.Option(
-            names = {"-lon", "--longitude"},
-            description = "Longitude",
-            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
-            required = true)
-    private double[] dblLongitude;
-
-    /**
-     * option for Latitude
-     */
-    @CommandLine.Option(
-            names = {"-lat", "--latitude"},
-            description = "Latitude",
-            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
-            required = true)
-    private double[] dblLatitude;
-
-    /**
-     * option for Zone Name
-     */
-    @CommandLine.Option(
-            names = {"-zn", "--zoneName"},
-            description = "Zone Name",
-            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
-            required = true)
-    private String[] strZoneName;
-
-    /**
-     * option for Zone Name
-     */
-    @CommandLine.Option(
-            names = {"-ld", "--locationDetail"},
-            description = "Location details: name,country,division,town",
-            arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
-            required = true)
-    private String[] strLocationDetail;
-
-    @Override
-    public void run() {
-        int intCounter = 0;
-        for (final String crtLocationDetail : strLocationDetail) {
-            SunClass.setZoneId(strZoneName[intCounter]);
-            SunClass.setLatitude(dblLatitude[intCounter]);
-            SunClass.setLongitude(dblLongitude[intCounter]);
-            final Properties crtProperties = SunClass.getSunRiseAndSet(crtLocationDetail);
-            final String strFeedback = String.format("Details are: %s", crtProperties);
-            LogExposureClass.LOGGER.debug(strFeedback);
-            intCounter++;
-        }
-    }
-
-    /**
-     * Constructor
-     */
-    protected CalculateSunriseAndSunset() {
-        super();
-    }
-
-}
-
-/**
- * clean files older than a given number of days
- */
 @CommandLine.Command(name = "CaptureChecksumsOfFilesFromFolderIntoCsvFile",
                      description = "Get statistics for all files within a given folder")
 class CaptureChecksumsOfFilesFromFoldersIntoCsvFile implements Runnable {
@@ -346,7 +274,7 @@ class CaptureChecksumsOfFilesFromFoldersIntoCsvFile implements Runnable {
             FileOperationsClass.StatisticsSubClass.captureFileStatisticsFromFolder(strFolder, outCsvFile);
             final ZonedDateTime zStopTimeStamp = ZonedDateTime.now(ZoneId.systemDefault());
             final Duration objDuration = Duration.between(startComputeTime, zStopTimeStamp);
-            final String strFeedback = String.format("For the folder %s calculated checksums are stored in the file %s operation completed in %s (which means %s | %s)", strFolder, outCsvFile, objDuration.toString(), AgingSubClass.computeAgingIntoHumanReadableWords(startComputeTime, zStopTimeStamp), TimingClass.AgingSubClass.computeAgingIntoTimeClock(startComputeTime, zStopTimeStamp));
+            final String strFeedback = String.format("For the folder %s calculated checksums are stored in the file %s operation completed in %s (which means %s | %s)", strFolder, outCsvFile, objDuration.toString(), TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(startComputeTime, zStopTimeStamp), TimingClass.AgingSubClass.computeAgingIntoTimeClock(startComputeTime, zStopTimeStamp));
             LogExposureClass.LOGGER.info(strFeedback);
         }
     }
