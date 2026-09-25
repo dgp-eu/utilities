@@ -97,7 +97,8 @@ public final class ArchivingClass {
                 try {
                     fileOrigSize = Long.parseLong(sizeBytesStr);
                 } catch (NumberFormatException en) {
-                    LogExposureClass.LOGGER.warn("Invalid SIZE_BYTES value '{}', defaulting to 0... {}", sizeBytesStr, Arrays.toString(en.getStackTrace()));
+                    final String strFeedback3 = String.format("Invalid SIZE_BYTES value '{}', defaulting to 0... {}", sizeBytesStr, Arrays.toString(en.getStackTrace()));
+                    LogExposureClass.LOGGER.warn(strFeedback3);
                     fileOrigSize = 0L;
                 }
                 final BigDecimal percentage = BasicStructuresClass.computePercentageSafely(fileArchSize, fileOrigSize);
