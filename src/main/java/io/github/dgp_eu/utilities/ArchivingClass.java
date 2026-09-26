@@ -18,29 +18,17 @@ import io.github.dgp_eu.tools.core.ShellingClass;
  * Archiving wrapper
  */
 public final class ArchivingClass {
-    /**
-     * Archive Name variable
-     */
+    /** Archive Name variable */
     private static String strArchiveName;
-    /**
-     * Archive Prefix variable
-     */
+    /** Archive Prefix variable */
     private static String strArchivePrefix;
-    /**
-     * Archive Password variable
-     */
+    /** Archive Password variable */
     private static String strArchivePwd;
-    /**
-     * Archive Suffix variable
-     */
+    /** Archive Suffix variable */
     private static String strArchiveSuffix;
-    /**
-     * Archive Folder variable
-     */
+    /** Archive Folder variable */
     private static String strArchivingDir;
-    /**
-     * Archive Executable variable
-     */
+    /** Archive Executable variable */
     private static String strArchivingExec;
 
     /**
@@ -97,7 +85,7 @@ public final class ArchivingClass {
                 try {
                     fileOrigSize = Long.parseLong(sizeBytesStr);
                 } catch (NumberFormatException en) {
-                    final String strFeedback3 = String.format("Invalid SIZE_BYTES value '{}', defaulting to 0... {}", sizeBytesStr, Arrays.toString(en.getStackTrace()));
+                    final String strFeedback3 = String.format("Invalid SIZE_BYTES value '%s', defaulting to 0... %s", sizeBytesStr, Arrays.toString(en.getStackTrace()));
                     LogExposureClass.LOGGER.warn(strFeedback3);
                     fileOrigSize = 0L;
                 }
